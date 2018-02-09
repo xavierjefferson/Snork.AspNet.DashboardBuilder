@@ -138,11 +138,11 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Snork.AspNet.DashboardBuilder\Snork.AspNet.DashboardBuilder.csproj">
+    <ProjectReference Include="..\..\src\Snork.AspNet.DashboardBuilder\Snork.AspNet.DashboardBuilder.csproj">
       <Project>{c5765171-8cc8-4699-94c9-d878851e71d7}</Project>
       <Name>Snork.AspNet.DashboardBuilder</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Snork.AspNetSysInfo\Snork.AspNetSysInfo.csproj">
+    <ProjectReference Include="..\..\src\Snork.AspNetSysInfo\Snork.AspNetSysInfo.csproj">
       <Project>{4a57c7d2-9e7e-440f-9e09-f7dd9df8d691}</Project>
       <Name>Snork.AspNetSysInfo</Name>
     </ProjectReference>
