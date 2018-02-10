@@ -1,13 +1,15 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using Snork.AspNetSysInfo.Properties;
 
 namespace Snork.AspNetSysInfo
 {
@@ -17,6 +19,15 @@ namespace Snork.AspNetSysInfo
         private readonly Panel divCenter = new Panel { CssClass = "center" };
         private readonly HtmlHead head = new HtmlHead();
         private readonly HtmlGenericControl html = new HtmlGenericControl("html");
+        private readonly Panel tabStrip = new Panel { ID = "tabstrip", ClientIDMode = ClientIDMode.Static };
+        private readonly HtmlGenericControl tabStripUtl = new HtmlGenericControl("ul");
+
+        public P2(HomePage px)
+        {
+            HomePage = px;
+        }
+
+        public HomePage HomePage { get; }
 
         protected override void CreateChildControls()
         {
@@ -25,6 +36,23 @@ namespace Snork.AspNetSysInfo
             html.Controls.Add(head);
             head.Controls.Add(new HtmlTitle { Text = "System Information" });
             head.Controls.Add(new HtmlMeta { HttpEquiv = "Content-Type", Content = "text/html; charset=utf-8" });
+
+            var script = new HtmlGenericControl("script");
+            script.Attributes["src"] = HomePage.Request.PathBase + "/" + nameof(Resource1.jquery_2_2_4_min);
+            head.Controls.Add(script);
+
+            script = new HtmlGenericControl("script");
+            script.Attributes["src"] = HomePage.Request.PathBase + "/" + nameof(Resource1.kendo_all_min);
+            head.Controls.Add(script);
+
+            script = new HtmlGenericControl("link");
+            script.Attributes["href"] = HomePage.Request.PathBase + "/" + nameof(Resource1.kendo_common_min);
+            script.Attributes["rel"] = "stylesheet";
+            head.Controls.Add(script);
+
+            script = new HtmlGenericControl("script");
+            script.Attributes["src"] = HomePage.Request.PathBase + "/" + nameof(Resource1.sysinfojs);
+            head.Controls.Add(script);
             var style = new HtmlGenericControl("style")
             {
                 InnerText = @" a:link {color: #000099; text-decoration: none; background-color: #ffffff;}
@@ -46,6 +74,9 @@ namespace Snork.AspNetSysInfo
             head.Controls.Add(style);
             html.Controls.Add(body);
             body.Controls.Add(divCenter);
+            body.Controls.Add(tabStrip);
+            tabStrip.Controls.Add(tabStripUtl);
+
 
             base.CreateChildControls();
         }
@@ -71,55 +102,28 @@ namespace Snork.AspNetSysInfo
             return string.Format("{0} TB", (value / (double) ((long) 1024 * 1024 * 1024 * 1024)).ToString("N"));
         }
 
-        private DataTable GenerateDataTable(string name)
-        {
-            var table = new DataTable(name);
-            table.Columns.Add("Name", typeof(string));
-            table.Columns.Add("Value", typeof(string));
-            return table;
-        }
-
-        private bool TestObject(string progID)
-        {
-            try
-            {
-                Server.CreateObject(progID);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        private void Assign(DataTable table, string name, string value)
-        {
-            var row = table.NewRow();
-            row["Name"] = name;
-            row["Value"] = value;
-            table.Rows.Add(row);
-        }
 
         private void LoadInformation(DataTable table)
         {
             var grid = new DataGrid();
-            BoundColumn col;
 
-            col = new BoundColumn();
-            col.DataField = "Name";
-            col.HeaderText = "Name";
-            col.ItemStyle.CssClass = "name";
-            grid.Columns.Add(col);
+            grid.Columns.Add(new BoundColumn
+            {
+                DataField = nameof(DataItem.Name),
+                HeaderText = "Name",
+                ItemStyle = { CssClass = "name" }
+            });
 
-            col = new BoundColumn();
-            col.DataField = "Value";
-            col.HeaderText = "Value";
-            col.ItemStyle.CssClass = "value";
-            grid.Columns.Add(col);
+            grid.Columns.Add(new BoundColumn
+            {
+                DataField = nameof(DataItem.Value),
+                HeaderText = "Value",
+                ItemStyle = { CssClass = "value" }
+            });
 
             grid.AutoGenerateColumns = false;
             grid.HeaderStyle.CssClass = "header";
-            grid.DataSource = new DataView(table);
+            grid.DataSource = table;
             grid.DataBind();
 
 
@@ -139,7 +143,7 @@ namespace Snork.AspNetSysInfo
                             break;
                     }
                     //  wrap <pre> for text contain newline.
-                    if (cell.Text.IndexOf(Environment.NewLine) >= 0)
+                    if (cell.Text.IndexOf(Environment.NewLine, StringComparison.Ordinal) >= 0)
                     {
                         cell.Text = string.Format("<pre>{0}</pre>", cell.Text);
                     }
@@ -147,22 +151,18 @@ namespace Snork.AspNetSysInfo
             }
 
 
-            var title = new HtmlGenericControl("h1");
-            title.InnerText = Server.HtmlEncode(table.TableName);
-            title.Attributes.Add("class", "title");
+     
 
-            var div = new HtmlGenericControl("div");
-            div.Attributes.Add("class", "section");
-            div.Controls.Add(new HtmlGenericControl("p"));
-            div.Controls.Add(title);
+            var div = new Panel();
             div.Controls.Add(grid);
-            div.Controls.Add(new HtmlGenericControl("p"));
-
-            divCenter.Controls.Add(div);
+            tabStripUtl.Controls.Add(new HtmlGenericControl("li") { InnerText = table.TableName });
+            tabStrip.Controls.Add(div);
+            
         }
 
         protected override void OnLoad(EventArgs e)
         {
+            EnsureChildControls();
             LoadInformation(GetSystemInfo());
             LoadInformation(GetSystemProcessorInfo());
             LoadInformation(GetSystemMemoryInfo());
@@ -171,12 +171,29 @@ namespace Snork.AspNetSysInfo
             LoadInformation(GetServerVariables());
             LoadInformation(GetEnvironmentVariables());
             LoadInformation(GetSessionInfo());
-            LoadInformation(GetSystemObjectInfo());
-            LoadInformation(GetMailObjectInfo());
-            LoadInformation(GetUploadObjectInfo());
-            LoadInformation(GetGraphicsObjectInfo());
             LoadInformation(GetOtherObjectInfo());
             base.OnLoad(e);
+        }
+
+        private class DataItem
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
+        }
+
+        private class DataTable : List<DataItem>
+        {
+            public DataTable(string name)
+            {
+                TableName = name;
+            }
+
+            public string TableName { get; }
+
+            public void Add(string name, string value)
+            {
+                Add(new DataItem { Name = name, Value = value });
+            }
         }
 
 
@@ -184,20 +201,6 @@ namespace Snork.AspNetSysInfo
 
         private DataTable GetSystemInfo()
         {
-            var table = GenerateDataTable("System Information");
-            //	Server Name
-            Assign(table, "Server Name", Server.MachineName);
-            Assign(table, "Server IP", Request.ServerVariables["LOCAl_ADDR"]);
-            Assign(table, "Server Domain", Request.ServerVariables["Server_Name"]);
-            Assign(table, "Server Port", Request.ServerVariables["Server_Port"]);
-            //	Web Server
-            Assign(table, "Web Server Version", Request.ServerVariables["Server_SoftWare"]);
-            //	Path
-            Assign(table, "Virtual Request Path", Request.FilePath);
-            Assign(table, "Physical Request Path", Request.PhysicalPath);
-            Assign(table, "Virtual Application Root Path", Request.ApplicationPath);
-            Assign(table, "Physical Application Root Path", Request.PhysicalApplicationPath);
-            //	Platform
             var os = Environment.OSVersion;
             var text = string.Empty;
             switch (os.Platform)
@@ -265,13 +268,27 @@ namespace Snork.AspNetSysInfo
                     break;
             }
             text = string.Format("{0} -- {1}", text, os);
-            Assign(table, "Operating System", text);
-            Assign(table, "Operating System Installation Directory", Environment.SystemDirectory);
-            Assign(table, ".Net Version", Environment.Version.ToString());
-            Assign(table, ".Net Language", CultureInfo.InstalledUICulture.EnglishName);
-            Assign(table, "Server Current Time", DateTime.Now.ToString());
-            Assign(table, "System Uptime", TimeSpan.FromMilliseconds(Environment.TickCount).ToString());
-            Assign(table, "Script Timeout", TimeSpan.FromSeconds(Server.ScriptTimeout).ToString());
+            var table = new DataTable("System Information")
+            {
+                { "Server Name", Server.MachineName },
+                { "Server IP", Request.ServerVariables["LOCAl_ADDR"] },
+                { "Server Domain", Request.ServerVariables["Server_Name"] },
+                { "Server Port", Request.ServerVariables["Server_Port"] },
+                { "Web Server Version", Request.ServerVariables["Server_SoftWare"] },
+                { "Virtual Request Path", Request.FilePath },
+                { "Physical Request Path", Request.PhysicalPath },
+                { "Virtual Application Root Path", Request.ApplicationPath },
+                { "Physical Application Root Path", Request.PhysicalApplicationPath },
+                { "Operating System", text },
+                { "Operating System Installation Directory", Environment.SystemDirectory },
+                { ".Net Version", Environment.Version.ToString() },
+                { ".Net Language", CultureInfo.InstalledUICulture.EnglishName },
+                { "Server Current Time", DateTime.Now.ToString() },
+                { "System Uptime", TimeSpan.FromMilliseconds(Environment.TickCount).ToString() },
+                { "Script Timeout", TimeSpan.FromSeconds(Server.ScriptTimeout).ToString() }
+            };
+
+
             return table;
         }
 
@@ -343,7 +360,7 @@ namespace Snork.AspNetSysInfo
                             label = string.Format("{0} {1,-10}", name, drive_type);
                         }
 
-                        Assign(table, label, size);
+                        table.Add(label, size);
                     }
                     catch (Exception)
                     {
@@ -444,27 +461,27 @@ namespace Snork.AspNetSysInfo
                             ? string.Empty
                             : string.Format("Free {0} / Total {1}", free_space, total_space);
 
-                        Assign(table, left, right);
+                        table.Add(left, right);
                     }
                     catch (Exception exception)
                     {
-                        Assign(table, "Exception Occurs", exception.ToString());
+                        table.Add("Exception Occurs", exception.ToString());
                     }
                 }
             }
             catch (Exception exception)
             {
-                Assign(table, "Exception Occurs", exception.ToString());
+                table.Add("Exception Occurs", exception.ToString());
             }
         }
 
         private DataTable GetSystemStorageInfo()
         {
-            var table = GenerateDataTable("Storage Information");
+            var table = new DataTable("Storage Information");
 
             try
             {
-                Assign(table, "Logical Driver Information", string.Join(", ", Directory.GetLogicalDrives()));
+                table.Add("Logical Driver Information", string.Join(", ", Directory.GetLogicalDrives()));
             }
             catch (Exception)
             {
@@ -504,31 +521,31 @@ namespace Snork.AspNetSysInfo
                             ht.Add(k, v);
                         }
                     }
-                    Assign(table, "Physical Memory Size", string.Format("{0}", ht["MemTotal"]));
-                    Assign(table, "Physical Free Memory Size", string.Format("{0}", ht["MemFree"]));
-                    Assign(table, "Swap Total Size", string.Format("{0}", ht["SwapTotal"]));
-                    Assign(table, "Swap Free Size", string.Format("{0}", ht["SwapFree"]));
+                    table.Add("Physical Memory Size", string.Format("{0}", ht["MemTotal"]));
+                    table.Add("Physical Free Memory Size", string.Format("{0}", ht["MemFree"]));
+                    table.Add("Swap Total Size", string.Format("{0}", ht["SwapTotal"]));
+                    table.Add("Swap Free Size", string.Format("{0}", ht["SwapFree"]));
                 }
             }
         }
 
         private DataTable GetSystemMemoryInfo()
         {
-            var table = GenerateDataTable("Memory Information");
+            var table = new DataTable("Memory Information");
             ;
-            Assign(table, "Current Working Set", FormatNumber((ulong) Environment.WorkingSet));
+            table.Add("Current Working Set", FormatNumber((ulong) Environment.WorkingSet));
             try
             {
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 {
                     var memory = SystemInfo.Memory;
-                    Assign(table, "Physical Memory Size", FormatNumber(memory.dwTotalPhys));
-                    Assign(table, "Physical Free Memory Size", FormatNumber(memory.dwAvailPhys));
-                    Assign(table, "PageFile Size", FormatNumber(memory.dwTotalPageFile));
-                    Assign(table, "Available PageFile Size", FormatNumber(memory.dwAvailPageFile));
-                    Assign(table, "Virtual Memory Size", FormatNumber(memory.dwTotalVirtual));
-                    Assign(table, "Available Memory Size", FormatNumber(memory.dwAvailVirtual));
-                    Assign(table, "Memory Load", string.Format("{0} %", memory.dwMemoryLoad.ToString("N")));
+                    table.Add("Physical Memory Size", FormatNumber(memory.dwTotalPhys));
+                    table.Add("Physical Free Memory Size", FormatNumber(memory.dwAvailPhys));
+                    table.Add("PageFile Size", FormatNumber(memory.dwTotalPageFile));
+                    table.Add("Available PageFile Size", FormatNumber(memory.dwAvailPageFile));
+                    table.Add("Virtual Memory Size", FormatNumber(memory.dwTotalVirtual));
+                    table.Add("Available Memory Size", FormatNumber(memory.dwAvailVirtual));
+                    table.Add("Memory Load", string.Format("{0} %", memory.dwMemoryLoad.ToString("N")));
                 }
                 else if ((int) Environment.OSVersion.Platform > 3)
                 {
@@ -614,11 +631,11 @@ namespace Snork.AspNetSysInfo
                         //  Load Percentage 
                         var load_percentage = (ushort) prop.GetValue(processor, new object[] { "LoadPercentage" });
                         sb.AppendFormat(" - Load = {0} %", load_percentage);
-                        Assign(table, "Processor", sb.ToString());
+                        table.Add("Processor", sb.ToString());
                     }
                     catch (Exception exception)
                     {
-                        Assign(table, "Exception Occurs", exception.ToString());
+                        table.Add("Exception Occurs", exception.ToString());
                     }
                 }
                 catch (Exception)
@@ -660,7 +677,7 @@ namespace Snork.AspNetSysInfo
                             processor["cpu MHz"] != null
                                 ? string.Format(" - {0} MHz", processor["cpu MHz"])
                                 : string.Empty);
-                        Assign(table, n, v);
+                        table.Add(n, v);
                     }
                 }
             }
@@ -668,18 +685,18 @@ namespace Snork.AspNetSysInfo
 
         private DataTable GetSystemProcessorInfo()
         {
-            var table = GenerateDataTable("Processor Information");
+            var table = new DataTable("Processor Information");
             try
             {
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 {
-                    Assign(table, "Number of Processors", Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
-                    Assign(table, "Processor Id", Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER"));
+                    table.Add("Number of Processors", Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS"));
+                    table.Add("Processor Id", Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER"));
                     var cpu = SystemInfo.Cpu;
-                    Assign(table, "Processor Type", cpu.dwProcessorType.ToString());
-                    Assign(table, "Processor Level", cpu.dwProcessorLevel.ToString());
-                    Assign(table, "Processor OEM Id", cpu.dwOemId.ToString());
-                    Assign(table, "Page Size", cpu.dwPageSize.ToString());
+                    table.Add("Processor Type", cpu.dwProcessorType.ToString());
+                    table.Add("Processor Level", cpu.dwProcessorLevel.ToString());
+                    table.Add("Processor OEM Id", cpu.dwOemId.ToString());
+                    table.Add("Page Size", cpu.dwPageSize.ToString());
                     GetSystemProcessorInfo_WMI(table);
                 }
                 else if ((int) Environment.OSVersion.Platform > 3)
@@ -695,109 +712,48 @@ namespace Snork.AspNetSysInfo
 
         private DataTable GetServerVariables()
         {
-            var table = GenerateDataTable("Server Variables");
+            var table = new DataTable("Server Variables");
             foreach (var key in Request.ServerVariables.AllKeys)
             {
-                Assign(table, key, Request.ServerVariables[key]);
+                table.Add(key, Request.ServerVariables[key]);
             }
             return table;
         }
 
         private DataTable GetEnvironmentVariables()
         {
-            var table = GenerateDataTable("Environment Variables");
+            var table = new DataTable("Environment Variables");
             foreach (DictionaryEntry de in Environment.GetEnvironmentVariables())
             {
-                Assign(table, de.Key.ToString(), de.Value.ToString());
+                table.Add(de.Key.ToString(), de.Value.ToString());
             }
             return table;
         }
 
-        private DataTable GetSystemObjectInfo()
-        {
-            var table = GenerateDataTable("System COM Component Information");
-            Assign(table, "Adodb.Connection", TestObject("Adodb.Connection").ToString());
-            Assign(table, "Adodb.RecordSet", TestObject("Adodb.RecordSet").ToString());
-            Assign(table, "Adodb.Stream", TestObject("Adodb.Stream").ToString());
-            Assign(table, "Scripting.FileSystemObject", TestObject("Scripting.FileSystemObject").ToString());
-            Assign(table, "Microsoft.XMLHTTP", TestObject("Microsoft.XMLHTTP").ToString());
-            Assign(table, "WScript.Shell", TestObject("WScript.Shell").ToString());
-            Assign(table, "MSWC.AdRotator", TestObject("MSWC.AdRotator").ToString());
-            Assign(table, "MSWC.BrowserType", TestObject("MSWC.BrowserType").ToString());
-            Assign(table, "MSWC.NextLink", TestObject("MSWC.NextLink").ToString());
-            Assign(table, "MSWC.Tools", TestObject("MSWC.Tools").ToString());
-            Assign(table, "MSWC.Status", TestObject("MSWC.Status").ToString());
-            Assign(table, "MSWC.Counters", TestObject("MSWC.Counters").ToString());
-            Assign(table, "IISSample.ContentRotator", TestObject("IISSample.ContentRotator").ToString());
-            Assign(table, "IISSample.PageCounter", TestObject("IISSample.PageCounter").ToString());
-            Assign(table, "MSWC.PermissionChecker", TestObject("MSWC.PermissionChecker").ToString());
-            return table;
-        }
-
-        private DataTable GetMailObjectInfo()
-        {
-            var table = GenerateDataTable("Mail COM Component Information");
-            Assign(table, "JMail.SMTPMail", TestObject("JMail.SMTPMail").ToString());
-            Assign(table, "JMail.Message", TestObject("JMail.Message").ToString());
-            Assign(table, "CDONTS.NewMail", TestObject("CDONTS.NewMail").ToString());
-            Assign(table, "CDO.Message", TestObject("CDO.Message").ToString());
-            Assign(table, "Persits.MailSender", TestObject("Persits.MailSender").ToString());
-            Assign(table, "SMTPsvg.Mailer", TestObject("SMTPsvg.Mailer").ToString());
-            Assign(table, "DkQmail.Qmail", TestObject("DkQmail.Qmail").ToString());
-            Assign(table, "SmtpMail.SmtpMail.1", TestObject("SmtpMail.SmtpMail.1").ToString());
-            Assign(table, "Geocel.Mailer.1", TestObject("Geocel.Mailer.1").ToString());
-            return table;
-        }
-
-        private DataTable GetUploadObjectInfo()
-        {
-            var table = GenerateDataTable("Upload COM Component Information");
-            Assign(table, "LyfUpload.UploadFile", TestObject("LyfUpload.UploadFile").ToString());
-            Assign(table, "Persits.Upload", TestObject("Persits.Upload").ToString());
-            Assign(table, "Ironsoft.UpLoad", TestObject("Ironsoft.UpLoad").ToString());
-            Assign(table, "aspcn.Upload", TestObject("aspcn.Upload").ToString());
-            Assign(table, "SoftArtisans.FileUp", TestObject("SoftArtisans.FileUp").ToString());
-            Assign(table, "SoftArtisans.FileManager", TestObject("SoftArtisans.FileManager").ToString());
-            Assign(table, "Dundas.Upload", TestObject("Dundas.Upload").ToString());
-            Assign(table, "w3.upload", TestObject("w3.upload").ToString());
-            return table;
-        }
-
-        private DataTable GetGraphicsObjectInfo()
-        {
-            var table = GenerateDataTable("Graphics COM Component Information");
-            Assign(table, "SoftArtisans.ImageGen", TestObject("SoftArtisans.ImageGen").ToString());
-            Assign(table, "W3Image.Image", TestObject("W3Image.Image").ToString());
-            Assign(table, "Persits.Jpeg", TestObject("Persits.Jpeg").ToString());
-            Assign(table, "XY.Graphics", TestObject("XY.Graphics").ToString());
-            Assign(table, "Ironsoft.DrawPic", TestObject("Ironsoft.DrawPic").ToString());
-            Assign(table, "Ironsoft.FlashCapture", TestObject("Ironsoft.FlashCapture").ToString());
-            return table;
-        }
 
         private DataTable GetOtherObjectInfo()
         {
-            var table = GenerateDataTable("Other COM Component Information");
-            Assign(table, "dyy.zipsvr", TestObject("dyy.zipsvr").ToString());
-            Assign(table, "hin2.com_iis", TestObject("hin2.com_iis").ToString());
-            Assign(table, "Socket.TCP", TestObject("Socket.TCP").ToString());
+            var table = new DataTable("Other COM Component Information");
+
             return table;
         }
 
         private DataTable GetSessionInfo()
         {
-            var table = GenerateDataTable("Session Information");
-            Assign(table, "Session Count", Session.Contents.Count.ToString());
-            Assign(table, "Application Count", Application.Contents.Count.ToString());
+            var table = new DataTable("Session Information")
+            {
+                { "Session Count", Session.Contents.Count.ToString() },
+                { "Application Count", Application.Contents.Count.ToString() }
+            };
             return table;
         }
 
         private DataTable GetRequestHeaderInfo()
         {
-            var table = GenerateDataTable("Request Headers");
+            var table = new DataTable("Request Headers");
             foreach (var key in Request.Headers.AllKeys)
             {
-                Assign(table, key, Request.Headers[key]);
+                table.Add(key, Request.Headers[key]);
             }
             return table;
         }

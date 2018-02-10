@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace Snork.AspNet.DashboardBuilder
 {
-    internal class RazorPageDispatcher : IDashboardDispatcher
+    internal class HtmlPageDispatcher : IDashboardDispatcher
     {
-        private readonly Func<Match, RazorPage> _pageFunc;
+        private readonly Func<Match, HtmlPage> _pageFunc;
 
-        public RazorPageDispatcher(Func<Match, RazorPage> pageFunc)
+        public HtmlPageDispatcher(Func<Match, HtmlPage> pageFunc)
         {
             _pageFunc = pageFunc;
         }

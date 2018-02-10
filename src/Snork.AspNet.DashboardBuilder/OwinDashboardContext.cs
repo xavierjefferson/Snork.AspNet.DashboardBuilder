@@ -18,10 +18,4 @@ namespace Snork.AspNet.DashboardBuilder
 
         public IDictionary<string, object> Environment { get; }
     }
-
-
-    public interface IRouteSource
-    {
-        RouteCollection GetRoutes();
-    }
 }

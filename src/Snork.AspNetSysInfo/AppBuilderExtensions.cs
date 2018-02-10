@@ -32,7 +32,7 @@ namespace Snork.AspNetSysInfo
             builder.Map("/MyDelegate", MyDelegate);
             options = options ?? new DashboardOptions();
             var routeSource = new DashboardRoutes();
-            return builder.UseDashboard("/sysinfo", options, routeSource);
+            return builder.UseDashboard0("/sysinfo", options, routeSource);
 
         }
 

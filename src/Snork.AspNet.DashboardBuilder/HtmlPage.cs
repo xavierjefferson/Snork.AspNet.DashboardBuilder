@@ -4,19 +4,19 @@ using System.Text;
 
 namespace Snork.AspNet.DashboardBuilder
 {
-    public abstract class RazorPage
+    public abstract class HtmlPage
     {
         private readonly StringBuilder _content = new StringBuilder();
         private string _body;
 
 
-        protected RazorPage()
+        protected HtmlPage()
         {
             GenerationTime = Stopwatch.StartNew();
             Html = new HtmlHelper(this);
         }
 
-        public RazorPage Layout { get; protected set; }
+        public HtmlPage Layout { get; protected set; }
         public HtmlHelper Html { get; }
         public UrlHelper Url { get; private set; }
 
@@ -24,8 +24,8 @@ namespace Snork.AspNet.DashboardBuilder
         public DashboardOptions DashboardOptions { get; private set; }
         public Stopwatch GenerationTime { get; private set; }
 
-        internal DashboardRequest Request { private get; set; }
-        internal DashboardResponse Response { private get; set; }
+        public DashboardRequest Request {   get; private set; }
+        public DashboardResponse Response { get; private set; }
 
         public string RequestPath => Request.Path;
 
@@ -43,7 +43,7 @@ namespace Snork.AspNet.DashboardBuilder
         }
 
         /// <exclude />
-        public void Assign(RazorPage parentPage)
+        public void Assign(HtmlPage parentPage)
         {
             Request = parentPage.Request;
             Response = parentPage.Response;

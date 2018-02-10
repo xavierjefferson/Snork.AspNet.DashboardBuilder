@@ -1,5 +1,6 @@
 using System.Reflection;
 using Snork.AspNet.DashboardBuilder;
+using Snork.AspNetSysInfo.Properties;
 
 namespace Snork.AspNetSysInfo
 {
@@ -27,7 +28,13 @@ namespace Snork.AspNetSysInfo
         static DashboardRoutes()
         {
             Routes = new RouteCollection();
-            Routes.AddRazorPage("/", x => new HomePage()); Routes.AddRazorPage("/ok", x => new HomePage());
+            Routes.AddRazorPage("/", x => new HomePage());
+            Routes.AddRazorPage("/ok", x => new HomePage());
+            Routes.AddStringResource("/" + nameof(Resource1.kendo_all_min) , x => new StringResource(Resource1.kendo_all_min, "text/javascript"));
+            Routes.AddStringResource("/" + nameof(Resource1.kendo_common_min), x => new StringResource(Resource1.kendo_common_min, "text/css"));
+            Routes.AddStringResource("/" + nameof(Resource1.jquery_2_2_4_min), x => new StringResource(Resource1.jquery_2_2_4_min, "text/javascript"));
+            Routes.AddStringResource("/" + nameof(Resource1.sysinfojs), x => new StringResource(Resource1.sysinfojs, "text/javascript"));
+
         }
 
         public static RouteCollection Routes { get; }

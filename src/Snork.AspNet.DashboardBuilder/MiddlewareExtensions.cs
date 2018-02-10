@@ -24,20 +24,7 @@ namespace Snork.AspNet.DashboardBuilder
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class MiddlewareExtensions
     {
-        //public static BuildFunc UseDashboard([NotNull] BuildFunc builder, [NotNull] DashboardOptions options,
-        //    [NotNull] RouteCollection routes)
-        //{
-        //    if (builder == null) throw new ArgumentNullException(nameof(builder));
-        //    if (options == null) throw new ArgumentNullException(nameof(options));
-
-        //    if (routes == null) throw new ArgumentNullException(nameof(routes));
-
-        //    builder(_ => UseDashboard(options, routes));
-
-        //    return builder;
-        //}
-
-        public static IAppBuilder UseDashboard(this IAppBuilder builder, string pathMatch, DashboardOptions options,
+        public static IAppBuilder UseDashboard0(this IAppBuilder builder, string pathMatch, DashboardOptions options,
             IRouteSource routeSource)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
@@ -46,14 +33,20 @@ namespace Snork.AspNet.DashboardBuilder
             if (routeSource == null) throw new ArgumentException(nameof(routeSource));
 
             SignatureConversions.AddConversions(builder);
-            builder.Map("/okok", app => app.Run(async context =>
+          
+
+            builder.Map(pathMatch, subApp =>
             {
-                await context.Response.WriteAsync("Returning from Map2");
-            }));
+                RouteCollection routes = routeSource.GetRoutes();
+                BuildFunc tempQualifier = middleware => subApp.Use(middleware(subApp.Properties));
+                if (tempQualifier == null) throw new ArgumentNullException(nameof(tempQualifier));
+               
 
-            builder.Map(pathMatch, subApp => { UseDashboard(options, routeSource.GetRoutes()); });
+                if (routes == null) throw new ArgumentNullException(nameof(routes));
 
-
+                tempQualifier(_ => UseDashboard(options, routes));
+                BuildFunc temp = tempQualifier;
+            });
             return builder;
         }
 

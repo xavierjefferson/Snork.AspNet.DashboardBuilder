@@ -7,16 +7,16 @@ namespace Snork.AspNet.DashboardBuilder
 {
     public class HtmlHelper
     {
-        private readonly RazorPage _page;
+        private readonly HtmlPage _page;
 
-        public HtmlHelper([NotNull] RazorPage page)
+        public HtmlHelper([NotNull] HtmlPage page)
         {
             if (page == null) throw new ArgumentNullException(nameof(page));
             _page = page;
         }
 
 
-        public NonEscapedString RenderPartial(RazorPage partialPage)
+        public NonEscapedString RenderPartial(HtmlPage partialPage)
         {
             partialPage.Assign(_page);
             return new NonEscapedString(partialPage.ToString());
