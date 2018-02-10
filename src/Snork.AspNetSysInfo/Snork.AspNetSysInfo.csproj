@@ -49,8 +49,10 @@
   <ItemGroup>
     <Compile Include="AppBuilderExtensions.cs" />
     <Compile Include="DashboardRoutes.cs" />
+    <Compile Include="GridItem.cs" />
+    <Compile Include="GridItemList.cs" />
     <Compile Include="HomePage.cs" />
-    <Compile Include="P2.cs">
+    <Compile Include="WebformsHomePage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -71,8 +73,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="default.css" />
     <Content Include="jquery-2.2.4.min.js" />
     <Content Include="kendo.all.min.js" />
+    <Content Include="kendo.blueopal.min.css" />
     <Content Include="kendo.common.min.css" />
     <Content Include="sysinfo.js" />
   </ItemGroup>

@@ -1,11 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
@@ -13,7 +11,7 @@ using Snork.AspNetSysInfo.Properties;
 
 namespace Snork.AspNetSysInfo
 {
-    internal class P2 : Page
+    internal class WebformsHomePage : Page
     {
         private readonly HtmlGenericControl body = new HtmlGenericControl("body");
         private readonly Panel divCenter = new Panel { CssClass = "center" };
@@ -21,8 +19,9 @@ namespace Snork.AspNetSysInfo
         private readonly HtmlGenericControl html = new HtmlGenericControl("html");
         private readonly Panel tabStrip = new Panel { ID = "tabstrip", ClientIDMode = ClientIDMode.Static };
         private readonly HtmlGenericControl tabStripUtl = new HtmlGenericControl("ul");
+        private readonly HyperLink hl = new HyperLink();
 
-        public P2(HomePage px)
+        public WebformsHomePage(HomePage px)
         {
             HomePage = px;
         }
@@ -45,8 +44,19 @@ namespace Snork.AspNetSysInfo
             script.Attributes["src"] = HomePage.Request.PathBase + "/" + nameof(Resource1.kendo_all_min);
             head.Controls.Add(script);
 
+
+            script = new HtmlGenericControl("link");
+            script.Attributes["href"] = HomePage.Request.PathBase + "/" + nameof(Resource1.default_css);
+            script.Attributes["rel"] = "stylesheet";
+            head.Controls.Add(script);
+
             script = new HtmlGenericControl("link");
             script.Attributes["href"] = HomePage.Request.PathBase + "/" + nameof(Resource1.kendo_common_min);
+            script.Attributes["rel"] = "stylesheet";
+            head.Controls.Add(script);
+
+            script = new HtmlGenericControl("link");
+            script.Attributes["href"] = HomePage.Request.PathBase + "/" + nameof(Resource1.kendo_blueopal_min);
             script.Attributes["rel"] = "stylesheet";
             head.Controls.Add(script);
 
@@ -55,24 +65,12 @@ namespace Snork.AspNetSysInfo
             head.Controls.Add(script);
             var style = new HtmlGenericControl("style")
             {
-                InnerText = @" a:link {color: #000099; text-decoration: none; background-color: #ffffff;}
-      a:hover {text-decoration: underline;}
-      body {font-family: Georgia, ""Times New Roman"", Times, serif; text-align: center}
-                table { margin - left: auto; margin - right: auto; text - align: left; border - collapse: collapse; border: 0;
-            }
-            td, th {border: 1px solid #000000; font-size: 75%; vertical-align: baseline;}
-                    .title
-                { font-size: 150%; }
-                .section {text-align: center;}
-                .header {text-align: center; background-color: #9999cc; font-weight: bold; color: #000000;}
-                    .name {background-color: #ccccff; font-weight: bold; color: #000000;}
-                    .value {background-color: #cccccc; color: #000000;}
-                    .value_true {background-color: #cccccc; color: #00ff00;}
-                        .value_false {background-color: #cccccc; color: #ff0000;}"
+                InnerText = @" "
             };
             style.Attributes["type"] = "text/css";
             head.Controls.Add(style);
             html.Controls.Add(body);
+            body.Controls.Add(hl);
             body.Controls.Add(divCenter);
             body.Controls.Add(tabStrip);
             tabStrip.Controls.Add(tabStripUtl);
@@ -103,27 +101,30 @@ namespace Snork.AspNetSysInfo
         }
 
 
-        private void LoadInformation(DataTable table)
+        private void LoadInformation(GridItemList table)
         {
-            var grid = new DataGrid();
+            var grid = new DataGrid
+            {
+                AutoGenerateColumns = false,
+                HeaderStyle = { CssClass = "header" },
+                DataSource = table
+            };
 
             grid.Columns.Add(new BoundColumn
             {
-                DataField = nameof(DataItem.Name),
+                DataField = nameof(GridItem.Name),
                 HeaderText = "Name",
                 ItemStyle = { CssClass = "name" }
             });
 
             grid.Columns.Add(new BoundColumn
             {
-                DataField = nameof(DataItem.Value),
+                DataField = nameof(GridItem.Value),
                 HeaderText = "Value",
                 ItemStyle = { CssClass = "value" }
             });
 
-            grid.AutoGenerateColumns = false;
-            grid.HeaderStyle.CssClass = "header";
-            grid.DataSource = table;
+
             grid.DataBind();
 
 
@@ -151,18 +152,22 @@ namespace Snork.AspNetSysInfo
             }
 
 
-     
-
             var div = new Panel();
             div.Controls.Add(grid);
-            tabStripUtl.Controls.Add(new HtmlGenericControl("li") { InnerText = table.TableName });
+            var htmlGenericControl = new HtmlGenericControl("li") { InnerText = table.GridName };
+            if (tabStripUtl.Controls.Count == 0)
+            {
+                htmlGenericControl.Attributes["class"] = "k-state-active";
+            }
+            tabStripUtl.Controls.Add(htmlGenericControl);
             tabStrip.Controls.Add(div);
-            
         }
 
         protected override void OnLoad(EventArgs e)
         {
             EnsureChildControls();
+            hl.Text = "Return to Application";
+            hl.NavigateUrl = this.HomePage.AppPath;
             LoadInformation(GetSystemInfo());
             LoadInformation(GetSystemProcessorInfo());
             LoadInformation(GetSystemMemoryInfo());
@@ -175,31 +180,10 @@ namespace Snork.AspNetSysInfo
             base.OnLoad(e);
         }
 
-        private class DataItem
-        {
-            public string Name { get; set; }
-            public string Value { get; set; }
-        }
-
-        private class DataTable : List<DataItem>
-        {
-            public DataTable(string name)
-            {
-                TableName = name;
-            }
-
-            public string TableName { get; }
-
-            public void Add(string name, string value)
-            {
-                Add(new DataItem { Name = name, Value = value });
-            }
-        }
-
 
         #region Get Information Function
 
-        private DataTable GetSystemInfo()
+        private GridItemList GetSystemInfo()
         {
             var os = Environment.OSVersion;
             var text = string.Empty;
@@ -268,7 +252,7 @@ namespace Snork.AspNetSysInfo
                     break;
             }
             text = string.Format("{0} -- {1}", text, os);
-            var table = new DataTable("System Information")
+            var table = new GridItemList("System Information")
             {
                 { "Server Name", Server.MachineName },
                 { "Server IP", Request.ServerVariables["LOCAl_ADDR"] },
@@ -292,7 +276,7 @@ namespace Snork.AspNetSysInfo
             return table;
         }
 
-        private void GetSystemStorageInfo_DriveInfo(DataTable table)
+        private void GetSystemStorageInfo_DriveInfo(GridItemList table)
         {
             try
             {
@@ -372,7 +356,7 @@ namespace Snork.AspNetSysInfo
             }
         }
 
-        private void GetSystemStorageInfo_WMI(DataTable table)
+        private void GetSystemStorageInfo_WMI(GridItemList table)
         {
             try
             {
@@ -475,9 +459,9 @@ namespace Snork.AspNetSysInfo
             }
         }
 
-        private DataTable GetSystemStorageInfo()
+        private GridItemList GetSystemStorageInfo()
         {
-            var table = new DataTable("Storage Information");
+            var table = new GridItemList("Storage Information");
 
             try
             {
@@ -502,7 +486,7 @@ namespace Snork.AspNetSysInfo
             return table;
         }
 
-        private void GetSystemMemoryInfo_proc(DataTable table)
+        private void GetSystemMemoryInfo_proc(GridItemList table)
         {
             var name = "/proc/meminfo";
             if (File.Exists(name))
@@ -529,9 +513,9 @@ namespace Snork.AspNetSysInfo
             }
         }
 
-        private DataTable GetSystemMemoryInfo()
+        private GridItemList GetSystemMemoryInfo()
         {
-            var table = new DataTable("Memory Information");
+            var table = new GridItemList("Memory Information");
             ;
             table.Add("Current Working Set", FormatNumber((ulong) Environment.WorkingSet));
             try
@@ -558,7 +542,7 @@ namespace Snork.AspNetSysInfo
             return table;
         }
 
-        private void GetSystemProcessorInfo_WMI(DataTable table)
+        private void GetSystemProcessorInfo_WMI(GridItemList table)
         {
             //  Use reflection to call WMI to make Mono compiler don't complain about assembly reference
             var dSystemManangement = Assembly.Load(
@@ -644,7 +628,7 @@ namespace Snork.AspNetSysInfo
             }
         }
 
-        private void GetSystemProcessorInfo_proc(DataTable table)
+        private void GetSystemProcessorInfo_proc(GridItemList table)
         {
             var name = "/proc/cpuinfo";
             if (File.Exists(name))
@@ -683,9 +667,9 @@ namespace Snork.AspNetSysInfo
             }
         }
 
-        private DataTable GetSystemProcessorInfo()
+        private GridItemList GetSystemProcessorInfo()
         {
-            var table = new DataTable("Processor Information");
+            var table = new GridItemList("Processor Information");
             try
             {
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT)
@@ -710,9 +694,9 @@ namespace Snork.AspNetSysInfo
             return table;
         }
 
-        private DataTable GetServerVariables()
+        private GridItemList GetServerVariables()
         {
-            var table = new DataTable("Server Variables");
+            var table = new GridItemList("Server Variables");
             foreach (var key in Request.ServerVariables.AllKeys)
             {
                 table.Add(key, Request.ServerVariables[key]);
@@ -720,9 +704,9 @@ namespace Snork.AspNetSysInfo
             return table;
         }
 
-        private DataTable GetEnvironmentVariables()
+        private GridItemList GetEnvironmentVariables()
         {
-            var table = new DataTable("Environment Variables");
+            var table = new GridItemList("Environment Variables");
             foreach (DictionaryEntry de in Environment.GetEnvironmentVariables())
             {
                 table.Add(de.Key.ToString(), de.Value.ToString());
@@ -731,16 +715,16 @@ namespace Snork.AspNetSysInfo
         }
 
 
-        private DataTable GetOtherObjectInfo()
+        private GridItemList GetOtherObjectInfo()
         {
-            var table = new DataTable("Other COM Component Information");
+            var table = new GridItemList("Other COM Component Information");
 
             return table;
         }
 
-        private DataTable GetSessionInfo()
+        private GridItemList GetSessionInfo()
         {
-            var table = new DataTable("Session Information")
+            var table = new GridItemList("Session Information")
             {
                 { "Session Count", Session.Contents.Count.ToString() },
                 { "Application Count", Application.Contents.Count.ToString() }
@@ -748,9 +732,9 @@ namespace Snork.AspNetSysInfo
             return table;
         }
 
-        private DataTable GetRequestHeaderInfo()
+        private GridItemList GetRequestHeaderInfo()
         {
-            var table = new DataTable("Request Headers");
+            var table = new GridItemList("Request Headers");
             foreach (var key in Request.Headers.AllKeys)
             {
                 table.Add(key, Request.Headers[key]);

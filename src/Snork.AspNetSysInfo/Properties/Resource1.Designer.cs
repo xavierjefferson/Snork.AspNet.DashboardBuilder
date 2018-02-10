@@ -61,6 +61,45 @@ namespace Snork.AspNetSysInfo.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to a:link {
+        ///    background-color: #ffffff;
+        ///    color: #000099;
+        ///    text-decoration: none;
+        ///}
+        ///
+        ///a:hover { text-decoration: underline; }
+        ///
+        ///body {
+        ///    font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;
+        ///}
+        ///
+        ///table {
+        ///    border: 0;
+        ///    border-collapse: collapse;
+        ///    margin-left: auto;
+        ///    margin-right: auto;
+        ///    text-align: left;
+        ///}
+        ///
+        ///td, th {
+        ///    border: 1px solid #000000;
+        ///    font-size: 75%;
+        ///    vertical-align: baseline;
+        ///}
+        ///
+        ///.title { font-size: 150%; }
+        ///
+        ///.section { text-align: center; }
+        ///
+        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string default_css {
+            get {
+                return ResourceManager.GetString("default_css", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to /*! jQuery v2.2.4 | (c) jQuery Foundation | jquery.org/license */
         ///!function(a,b){&quot;object&quot;==typeof module&amp;&amp;&quot;object&quot;==typeof module.exports?module.exports=a.document?b(a,!0):function(a){if(!a.document)throw new Error(&quot;jQuery requires a window with a document&quot;);return b(a)}:b(a)}(&quot;undefined&quot;!=typeof window?window:this,function(a,b){var c=[],d=a.document,e=c.slice,f=c.concat,g=c.push,h=c.indexOf,i={},j=i.toString,k=i.hasOwnProperty,l={},m=&quot;2.2.4&quot;,n=function(a,b){return new n.fn.init(a,b)},o=/^[\s\uFEFF\xA0]+|[\ [rest of string was truncated]&quot;;.
         /// </summary>
@@ -79,6 +118,18 @@ namespace Snork.AspNetSysInfo.Properties {
         internal static string kendo_all_min {
             get {
                 return ResourceManager.GetString("kendo_all_min", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to /** 
+        /// * Kendo UI v2018.1.117 (http://www.telerik.com/kendo-ui)                                                                                                                                               
+        /// * Copyright 2018 Telerik AD. All rights reserved.                                                                                                                                                      
+        /// *                                                                                                        [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string kendo_blueopal_min {
+            get {
+                return ResourceManager.GetString("kendo_blueopal_min", resourceCulture);
             }
         }
         

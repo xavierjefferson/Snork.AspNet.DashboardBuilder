@@ -34,6 +34,8 @@ namespace Snork.AspNetSysInfo
             Routes.AddStringResource("/" + nameof(Resource1.kendo_common_min), x => new StringResource(Resource1.kendo_common_min, "text/css"));
             Routes.AddStringResource("/" + nameof(Resource1.jquery_2_2_4_min), x => new StringResource(Resource1.jquery_2_2_4_min, "text/javascript"));
             Routes.AddStringResource("/" + nameof(Resource1.sysinfojs), x => new StringResource(Resource1.sysinfojs, "text/javascript"));
+            Routes.AddStringResource("/" + nameof(Resource1.kendo_blueopal_min), x => new StringResource(Resource1.kendo_blueopal_min, "text/css"));
+            Routes.AddStringResource("/" + nameof(Resource1.default_css), x => new StringResource(Resource1.default_css, "text/css"));
 
         }
 

@@ -11,14 +11,12 @@ namespace Snork.AspNetSysInfo
     {
         public override void Execute()
         {
-            var page = new P2(this) { AppRelativeVirtualPath = "~/sysinfo" };
+            var page = new WebformsHomePage(this) { AppRelativeVirtualPath = "~/sysinfo" };
 
-
-
-            using (var s = new StringWriter())
+            using (var stringWriter = new StringWriter())
             {
-                HttpContext.Current.Server.Execute(page, s, false);
-                WriteLiteral(s.ToString());
+                HttpContext.Current.Server.Execute(page, stringWriter, false);
+                WriteLiteral(stringWriter.ToString());
             }
         }
     }
