@@ -715,9 +715,17 @@ namespace Snork.AspNet.Dashboard.SysInfo
         {
             var table = new GridItemList("Session Information")
             {
-                { "Session Count", Session.Contents.Count.ToString() },
+               
                 { "Application Count", Application.Contents.Count.ToString() }
             };
+            try
+            {
+                table.Add("Session Count", Session.Contents.Count.ToString());
+            }
+            catch (Exception ex)
+            {
+                table.Add("Session Count", "n/a (disabled)");
+            }
             return table;
         }
 

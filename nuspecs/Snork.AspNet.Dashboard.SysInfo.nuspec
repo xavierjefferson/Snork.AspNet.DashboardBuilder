@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>Snork.AspNet.Dashboard.SysInfo</id>
-    <version>1.0.5380</version>
+    <version>1.0.5382</version>
     <authors>Xavier Jefferson</authors>
     <owners>XavierJefferson</owners>
     <licenseUrl>https://www.gnu.org/licenses/lgpl-3.0.en.html</licenseUrl>
@@ -13,7 +13,7 @@
     <summary>This is a plug-in dashboard for ASP.NET applications that outputs a large amount of information about a web application's current state.</summary>
     <description>This is a plug-in dashboard that outputs a large amount of information about a web application's current state. This includes information about compilation options and extensions, the .NET version, server information and environment, the PHP environment, OS version information, paths, master and local values of configuration options, and HTTP headers.</description>
     <releaseNotes>
-      Initial release
+      Update for when session state is disabled
     </releaseNotes>
     <copyright>Copyright © 2018 Xavier Jefferson</copyright>
     <tags>dashboard system information phpinfo</tags>
