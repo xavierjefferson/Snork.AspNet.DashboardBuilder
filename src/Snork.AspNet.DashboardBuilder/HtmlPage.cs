@@ -21,7 +21,7 @@ namespace Snork.AspNet.DashboardBuilder
         public UrlHelper Url { get; private set; }
 
         public string AppPath { get; internal set; }
-        public DashboardOptions DashboardOptions { get; private set; }
+        public IDashboardOptions DashboardOptions { get; private set; }
         public Stopwatch GenerationTime { get; private set; }
 
         public DashboardRequest Request {   get; private set; }

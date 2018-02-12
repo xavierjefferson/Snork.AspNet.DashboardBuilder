@@ -5,7 +5,7 @@ namespace Snork.AspNet.DashboardBuilder
 {
     public abstract class DashboardContext
     {
-        protected DashboardContext([NotNull] DashboardOptions options)
+        protected DashboardContext([NotNull] IDashboardOptions options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 
@@ -14,7 +14,7 @@ namespace Snork.AspNet.DashboardBuilder
         }
 
 
-        public DashboardOptions Options { get; }
+        public IDashboardOptions Options { get; }
 
         public Match UriMatch { get; set; }
 

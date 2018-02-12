@@ -9,13 +9,7 @@ namespace Snork.AspNetSysInfo
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class AppBuilderExtensions
     {
-        private static void MyDelegate(IAppBuilder app)
-        {
-            app.Run(async context =>
-            {
-                await context.Response.WriteAsync("Returning from Map");
-            });
-        }
+  
         /// <summary>
         ///     Adds Dashboard UI middleware to the OWIN request processing pipeline
         /// </summary>
@@ -29,7 +23,7 @@ namespace Snork.AspNetSysInfo
             DashboardOptions options = null)
         {
             
-            builder.Map("/MyDelegate", MyDelegate);
+           
             options = options ?? new DashboardOptions();
             var routeSource = new DashboardRoutes();
             return builder.UseDashboard0("/sysinfo", options, routeSource);

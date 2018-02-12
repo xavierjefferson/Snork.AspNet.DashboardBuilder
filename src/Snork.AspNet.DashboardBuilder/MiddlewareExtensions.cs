@@ -5,7 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Owin;
+using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Infrastructure;
+using Microsoft.Owin.StaticFiles;
 using Owin;
 
 namespace Snork.AspNet.DashboardBuilder
@@ -21,10 +23,11 @@ namespace Snork.AspNet.DashboardBuilder
                 Func<IDictionary<string, object>, Task>
             >>>;
 
+  
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class MiddlewareExtensions
     {
-        public static IAppBuilder UseDashboard0(this IAppBuilder builder, string pathMatch, DashboardOptions options,
+        public static IAppBuilder UseDashboard0(this IAppBuilder builder, string pathMatch, IDashboardOptions options,
             IRouteSource routeSource)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
@@ -34,7 +37,7 @@ namespace Snork.AspNet.DashboardBuilder
 
             SignatureConversions.AddConversions(builder);
           
-
+        
             builder.Map(pathMatch, subApp =>
             {
                 RouteCollection routes = routeSource.GetRoutes();
@@ -50,7 +53,7 @@ namespace Snork.AspNet.DashboardBuilder
             return builder;
         }
 
-        private static MidFunc UseDashboard([NotNull] DashboardOptions options, [NotNull] RouteCollection routes)
+        private static MidFunc UseDashboard([NotNull] IDashboardOptions options, [NotNull] RouteCollection routes)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 

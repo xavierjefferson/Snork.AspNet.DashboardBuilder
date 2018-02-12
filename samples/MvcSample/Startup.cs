@@ -11,6 +11,7 @@ namespace MvcSample
     {
         public void Configuration(IAppBuilder app)
         {
+
             app.UseSysInfoDashboard();
         }
     }

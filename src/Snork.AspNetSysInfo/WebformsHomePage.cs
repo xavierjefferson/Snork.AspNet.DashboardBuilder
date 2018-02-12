@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
@@ -11,15 +13,59 @@ using Snork.AspNetSysInfo.Properties;
 
 namespace Snork.AspNetSysInfo
 {
+    public static class htmlx
+    {
+        public static T AddMany<T, U>(this T control, IEnumerable<U> items, Func<U, Control> ff) where T : Control
+        {
+            foreach (var m in items)
+            {
+                var c = ff(m);
+                if (c != null)
+                {
+                    control.Controls.Add(c);
+                }
+            }
+            return control;
+        }
+
+        public static T With<T>(this T control, Action<T> sfunc) where T : Control
+        {
+            sfunc(control);
+            return control;
+        }
+
+        public static T AddControl<T>(this T control, Func<Control> sfunc) where T : Control
+        {
+            control.Controls.Add(sfunc());
+            return control;
+        }
+
+        public static T SetAttribute<T>(this T control, string name, string value) where T : HtmlGenericControl
+        {
+            control.Attributes[name] = value;
+            return control;
+        }
+        public static T SetInnerHtml<T>(this T control,  string value) where T : HtmlGenericControl
+        {
+            control.InnerHtml = value;
+            return control;
+        }
+        public static T SetID<T>(this T control,   string value) where T :  Control
+        {
+            control.ID = value;
+            return control;
+        }
+    }
+
     internal class WebformsHomePage : Page
     {
         private readonly HtmlGenericControl body = new HtmlGenericControl("body");
         private readonly Panel divCenter = new Panel { CssClass = "center" };
         private readonly HtmlHead head = new HtmlHead();
+        private readonly HyperLink hl = new HyperLink();
         private readonly HtmlGenericControl html = new HtmlGenericControl("html");
         private readonly Panel tabStrip = new Panel { ID = "tabstrip", ClientIDMode = ClientIDMode.Static };
         private readonly HtmlGenericControl tabStripUtl = new HtmlGenericControl("ul");
-        private readonly HyperLink hl = new HyperLink();
 
         public WebformsHomePage(HomePage px)
         {
@@ -36,39 +82,20 @@ namespace Snork.AspNetSysInfo
             head.Controls.Add(new HtmlTitle { Text = "System Information" });
             head.Controls.Add(new HtmlMeta { HttpEquiv = "Content-Type", Content = "text/html; charset=utf-8" });
 
-            var script = new HtmlGenericControl("script");
-            script.Attributes["src"] = HomePage.Request.PathBase + "/" + nameof(Resource1.jquery_2_2_4_min);
-            head.Controls.Add(script);
-
-            script = new HtmlGenericControl("script");
-            script.Attributes["src"] = HomePage.Request.PathBase + "/" + nameof(Resource1.kendo_all_min);
-            head.Controls.Add(script);
-
-
-            script = new HtmlGenericControl("link");
-            script.Attributes["href"] = HomePage.Request.PathBase + "/" + nameof(Resource1.default_css);
-            script.Attributes["rel"] = "stylesheet";
-            head.Controls.Add(script);
-
-            script = new HtmlGenericControl("link");
-            script.Attributes["href"] = HomePage.Request.PathBase + "/" + nameof(Resource1.kendo_common_min);
-            script.Attributes["rel"] = "stylesheet";
-            head.Controls.Add(script);
-
-            script = new HtmlGenericControl("link");
-            script.Attributes["href"] = HomePage.Request.PathBase + "/" + nameof(Resource1.kendo_blueopal_min);
-            script.Attributes["rel"] = "stylesheet";
-            head.Controls.Add(script);
-
-            script = new HtmlGenericControl("script");
-            script.Attributes["src"] = HomePage.Request.PathBase + "/" + nameof(Resource1.sysinfojs);
-            head.Controls.Add(script);
-            var style = new HtmlGenericControl("style")
-            {
-                InnerText = @" "
-            };
-            style.Attributes["type"] = "text/css";
-            head.Controls.Add(style);
+            head.AddControl(() =>
+                    CreateRemoteScriptControl(HomePage.Request.PathBase + "/" + nameof(Resource1.jquery_2_2_4_min)))
+                .AddControl(() =>
+                    CreateRemoteScriptControl(HomePage.Request.PathBase + "/" + nameof(Resource1.kendo_all_min)))
+                .AddControl(() =>
+                    CreateRemoteScriptControl(HomePage.Request.PathBase + "/" + nameof(Resource1.sysinfojs)))
+                .AddControl(() => CreateRemoteCssLink(HomePage.Request.PathBase + "/" + nameof(Resource1.default_css)))
+                .AddControl(() =>
+                    CreateRemoteCssLink(HomePage.Request.PathBase + "/" + nameof(Resource1.kendo_common_min)))
+                .AddControl(() =>
+                    CreateRemoteCssLink(HomePage.Request.PathBase + "/" + nameof(Resource1.kendo_blueopal_min)));
+      
+ 
+           
             html.Controls.Add(body);
             body.Controls.Add(hl);
             body.Controls.Add(divCenter);
@@ -77,6 +104,16 @@ namespace Snork.AspNetSysInfo
 
 
             base.CreateChildControls();
+        }
+
+        private static HtmlGenericControl CreateRemoteCssLink(string href)
+        {
+            return new HtmlGenericControl("link").SetAttribute("rel","stylesheet").SetAttribute("href", href);
+        }
+
+        private static HtmlGenericControl CreateRemoteScriptControl(string src)
+        {
+            return new HtmlGenericControl("script").SetAttribute("src",src);
         }
 
         private string FormatNumber(ulong value)
@@ -103,71 +140,59 @@ namespace Snork.AspNetSysInfo
 
         private void LoadInformation(GridItemList table)
         {
-            var grid = new DataGrid
-            {
-                AutoGenerateColumns = false,
-                HeaderStyle = { CssClass = "header" },
-                DataSource = table
-            };
-
-            grid.Columns.Add(new BoundColumn
-            {
-                DataField = nameof(GridItem.Name),
-                HeaderText = "Name",
-                ItemStyle = { CssClass = "name" }
-            });
-
-            grid.Columns.Add(new BoundColumn
-            {
-                DataField = nameof(GridItem.Value),
-                HeaderText = "Value",
-                ItemStyle = { CssClass = "value" }
-            });
-
-
-            grid.DataBind();
-
-
-            foreach (DataGridItem item in grid.Items)
-            {
-                if (item.Cells.Count == 2)
-                {
-                    var cell = item.Cells[1];
-                    //  change true/false style
-                    switch (cell.Text.ToLower())
+            var id = "a_" + Guid.NewGuid();
+            var grid = new HtmlGenericControl("table").SetID(id).AddControl(() =>
                     {
-                        case "true":
-                            cell.CssClass = "value_true";
-                            break;
-                        case "false":
-                            cell.CssClass = "value_false";
-                            break;
-                    }
-                    //  wrap <pre> for text contain newline.
-                    if (cell.Text.IndexOf(Environment.NewLine, StringComparison.Ordinal) >= 0)
-                    {
-                        cell.Text = string.Format("<pre>{0}</pre>", cell.Text);
-                    }
-                }
-            }
+                        return new HtmlGenericControl("colgroup").AddControl(() =>
+                                new HtmlGenericControl("col").SetAttribute("style", "width:110px"))
+                            .AddControl(() => new HtmlGenericControl("col"));
+                    })
+                    .AddControl(() => new HtmlGenericControl("thead")
+                        .AddControl(() => new HtmlGenericControl("tr")
+                            .AddControl(() =>
+                                new HtmlGenericControl("th").SetAttribute("data-field", nameof(GridItem.Name)).SetInnerHtml("Name"))
+                            .AddControl(() =>
+                                new HtmlGenericControl("th").SetAttribute("data-field", nameof(GridItem.Value)).SetInnerHtml("Value"))
+                        ))
+                    .AddControl(() => new HtmlGenericControl("tbody")
+                        .AddMany(table, i =>
+                        {
+                            return new HtmlGenericControl("tr")
+                                .AddControl(() => new HtmlGenericControl("td").SetInnerHtml(HttpUtility.HtmlEncode(i.Name)))
+                                .AddControl(() => new HtmlGenericControl("td").SetInnerHtml(HttpUtility.HtmlEncode(i.Value)));
+                        }))
+                ;
 
 
             var div = new Panel();
             div.Controls.Add(grid);
-            var htmlGenericControl = new HtmlGenericControl("li") { InnerText = table.GridName };
+            var htmlGenericControl = new HtmlGenericControl("li").SetInnerHtml(table.GridName);
             if (tabStripUtl.Controls.Count == 0)
             {
                 htmlGenericControl.Attributes["class"] = "k-state-active";
             }
             tabStripUtl.Controls.Add(htmlGenericControl);
             tabStrip.Controls.Add(div);
+            var script = string.Format(@"$(document).ready(function() {{
+                    $('#{0}').kendoGrid({{
+            height: 550,
+            sortable: true
+        }});
+    }});", id);
+            var scriptControl = CreateScriptControl(script);
+            head.Controls.Add(scriptControl);
+        }
+
+        private static HtmlGenericControl CreateScriptControl(string script)
+        {
+            return new HtmlGenericControl("script").AddControl(()=>new LiteralControl().With(i=>i.Text = script));
         }
 
         protected override void OnLoad(EventArgs e)
         {
             EnsureChildControls();
             hl.Text = "Return to Application";
-            hl.NavigateUrl = this.HomePage.AppPath;
+            hl.NavigateUrl = HomePage.AppPath;
             LoadInformation(GetSystemInfo());
             LoadInformation(GetSystemProcessorInfo());
             LoadInformation(GetSystemMemoryInfo());

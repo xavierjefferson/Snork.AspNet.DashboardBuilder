@@ -5,7 +5,7 @@ namespace Snork.AspNet.DashboardBuilder
 {
     public sealed class OwinDashboardContext : DashboardContext
     {
-        public OwinDashboardContext([NotNull] DashboardOptions options,
+        public OwinDashboardContext([NotNull] IDashboardOptions options,
             [NotNull] IDictionary<string, object> environment)
             : base(options)
         {
