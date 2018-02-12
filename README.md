@@ -1,12 +1,13 @@
 ﻿
+
 # System Information Dashboard
 [![Latest version](https://img.shields.io/nuget/v/Snork.AspNet.Dashboard.SysInfo.svg)](https://www.nuget.org/packages/Snork.AspNet.Dashboard.SysInfo/) 
 
 
 This is a plug-in dashboard for ASP.NET applications that outputs a large amount of information about the application's current state. This includes information about compilation options and extensions, the .NET version, server information and environment, the environment, OS version information, paths, master and local values of configuration options, and HTTP headers.
 
-## Adding Dashboard
-The [OWIN Startup class](https://docs.microsoft.com/en-us/aspnet/aspnet/overview/owin-and-katana/owin-startup-class-detection) is intended to keep web application bootstrap logic in a single place. In Visual Studio 2013 you can add it by right clicking on the project and choosing the Add / OWIN Startup Class menu item.
+## Adding the Dashboard to Your Application
+The [OWIN Startup class](https://docs.microsoft.com/en-us/aspnet/aspnet/overview/owin-and-katana/owin-startup-class-detection) is intended to keep web application bootstrap logic in a single place. In Visual Studio 2013 or later, you can add it by right clicking on the project and choosing the Add / OWIN Startup Class menu item.
 
 ![Adding startup class](docs/add-owin-startup.png)
 
@@ -32,3 +33,32 @@ namespace MyWebApplication
 }
 ```
 After performing these steps, open your browser and hit the *http://your-app/sysinfo* URL to see the Dashboard.
+
+## Configuring Authorization
+The dashboard exposes sensitive information about your web server, so it is really important to restrict access to it.  By default, only local requests are allowed.  You can change this by passing your own implementations of the `IDashboardAuthorizationFilter` interface, whose `Authorize` method is used to allow or prohibit a request. The first step is to provide your own implementation.
+
+``
+public class MyAuthorizationFilter : IDashboardAuthorizationFilter
+{
+    public bool Authorize(DashboardContext context)
+    {
+        // In case you need an OWIN context, use the next line, `OwinContext` class
+        // is the part of the `Microsoft.Owin` package.
+        var owinContext = new OwinContext(context.GetOwinEnvironment());
+
+        // Allow all authenticated users to see the Dashboard (potentially dangerous).
+        return owinContext.Authentication.User.Identity.IsAuthenticated;
+    }
+}
+``
+
+The second step is to pass it to the UseHangfireDashboard method. You can pass multiple filters, and the access will be granted only if all of them return true.
+
+``
+app.UseSysInfoDashboard("/sysinfo", new DashboardOptions
+{
+    Authorization = new [] { new MyAuthorizationFilter() }
+});
+``
+
+## Changing URL Mapping

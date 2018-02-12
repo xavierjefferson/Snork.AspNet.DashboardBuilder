@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/xavierjefferson/Snork.AspNet.DashboardBuilder</projectUrl>
     <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <summary>This is a plug-in dashboard that outputs a large amount of information about a web application's current state.</summary>
+    <summary>This is a plug-in dashboard for ASP.NET applications that outputs a large amount of information about a web application's current state.</summary>
     <description>This is a plug-in dashboard that outputs a large amount of information about a web application's current state. This includes information about compilation options and extensions, the .NET version, server information and environment, the PHP environment, OS version information, paths, master and local values of configuration options, and HTTP headers.</description>
     <releaseNotes>
       Initial release
