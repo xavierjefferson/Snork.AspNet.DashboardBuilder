@@ -4,6 +4,14 @@
 
 This is a plug-in dashboard for ASP.NET applications that outputs a large amount of information about the application's current state. This includes information about compilation options and extensions, the .NET version, server information and environment, the environment, OS version information, paths, master and local values of configuration options, and HTTP headers.
 
+## Displayed Information
+
+The dashboard displays the following:
+
+### Overall System Information
+
+![System](docs/01-system.png)
+
 ## Adding the Dashboard to Your Application
 The [OWIN Startup class](https://docs.microsoft.com/en-us/aspnet/aspnet/overview/owin-and-katana/owin-startup-class-detection) is intended to keep web application bootstrap logic in a single place. In Visual Studio 2013 or later, you can add it by right clicking on the project and choosing the Add / OWIN Startup Class menu item.
 
