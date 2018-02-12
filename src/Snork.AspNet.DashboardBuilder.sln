@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{119D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F710C9CF-69F9-4373-9B74-ABB185BF985B}"
 	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
+		..\nuspecs\Snork.AspNet.Dashboard.SysInfo.nuspec = ..\nuspecs\Snork.AspNet.Dashboard.SysInfo.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snork.AspNet.Dashboard.SysInfo", "Snork.AspNetSysInfo\Snork.AspNet.Dashboard.SysInfo.csproj", "{4A57C7D2-9E7E-440F-9E09-F7DD9DF8D691}"
@@ -15,6 +15,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snork.AspNet.DashboardBuilder", "Snork.AspNet.DashboardBuilder\Snork.AspNet.DashboardBuilder.csproj", "{C5765171-8CC8-4699-94C9-D878851E71D7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcSample", "..\samples\MvcSample\MvcSample.csproj", "{FE5EAE49-2627-42B6-8C2B-EBE4D45B4D97}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github", "Github", "{48387CC0-7117-4DB9-BD79-920D15017059}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

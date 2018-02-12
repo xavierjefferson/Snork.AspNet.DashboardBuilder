@@ -11,7 +11,7 @@ namespace MvcSample
     {
         public void Configuration(IAppBuilder app)
         {
-
+            // Map Dashboard to the `http://<your-app>/sysinfo` URL.
             app.UseSysInfoDashboard();
         }
     }
