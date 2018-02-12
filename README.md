@@ -1,16 +1,24 @@
-﻿# System Information Dashboard
+﻿
+# System Information Dashboard
 [![Latest version](https://img.shields.io/nuget/v/Snork.AspNet.Dashboard.SysInfo.svg)](https://www.nuget.org/packages/Snork.AspNet.Dashboard.SysInfo/) 
 
 
 This is a plug-in dashboard for ASP.NET applications that outputs a large amount of information about the application's current state. This includes information about compilation options and extensions, the .NET version, server information and environment, the environment, OS version information, paths, master and local values of configuration options, and HTTP headers.
 
-## Displayed Information
+## Information Presented
 
-The dashboard displays the following:
+|Name  | Description | 
+|--|--| 
+| [System Information](docs/01-system.png) | Server info, .Net information, system uptime | 
+| [Processor Information](docs/02-processor.png) | Information about the server's processors | 
+| [Memory Information](docs/03-memory.png) | Information about the application's memory use and server's available memory | 
+| [Storage Information](docs/04-storage.png) | List of storage devices on server | 
+| [Request Headers](docs/05-request-headers.png) | HTTP Request headers for the *current* request | 
+| [Server Variables](docs/06-server-variables.png) | Standard HTTP server variables | 
+| [Environment Variables](docs/07-environment-variables.png) | System environment variables from server | 
+| [Session Information](docs/08-session.png) | Count of items in `Application` and current `Session` instances (if any) | 
+| [Assemblies](docs/09-assemblies.png) | List of assemblies loaded in application domain | 
 
-### Overall System Information
-
-![System](docs/01-system.png)
 
 ## Adding the Dashboard to Your Application
 The [OWIN Startup class](https://docs.microsoft.com/en-us/aspnet/aspnet/overview/owin-and-katana/owin-startup-class-detection) is intended to keep web application bootstrap logic in a single place. In Visual Studio 2013 or later, you can add it by right clicking on the project and choosing the Add / OWIN Startup Class menu item.
