@@ -49,12 +49,12 @@ namespace MyWebApplication
 After performing these steps, open your browser and hit the *http://your-app/sysinfo* URL to see the Dashboard.
 
 ## Configuring Authorization
-The dashboard exposes sensitive information about your web server, so it is really important to restrict access to it.  By default, only local requests are allowed.  You can change this by passing your own implementations of the `IDashboardAuthorizationFilter` interface, whose `Authorize` method is used to allow or prohibit a request. The first step is to provide your own implementation.
+The dashboard exposes sensitive information about your web server, so it is really important to restrict access to it.  By default, only local requests are allowed.  You can change this by passing your own implementations of the `Snork.AspNet.DashboardBuilder.IDashboardAuthorizationFilter` interface, whose `Authorize` method is used to allow or prohibit a request. The first step is to provide your own implementation.
 
 ```
-public class MyAuthorizationFilter : IDashboardAuthorizationFilter
+public class MyAuthorizationFilter : Snork.AspNet.DashboardBuilder.IDashboardAuthorizationFilter
 {
-    public bool Authorize(DashboardContext context)
+    public bool Authorize(Snork.AspNet.DashboardBuilder.DashboardContext context)
     {
         // In case you need an OWIN context, use the next line, `OwinContext` class
         // is the part of the `Microsoft.Owin` package.
@@ -69,7 +69,7 @@ public class MyAuthorizationFilter : IDashboardAuthorizationFilter
 The second step is to pass it to the UseHangfireDashboard method. You can pass multiple filters, and the access will be granted only if all of them return true.
 
 ```
-app.UseSysInfoDashboard("/sysinfo", new DashboardOptions
+app.UseSysInfoDashboard("/sysinfo", new Snork.AspNet.DashboardBuilder.DashboardOptions
 {
     Authorization = new [] { new MyAuthorizationFilter() }
 });
