@@ -48,6 +48,10 @@ namespace MyWebApplication
 ```
 After performing these steps, open your browser and hit the *http://your-app/sysinfo* URL to see the Dashboard.
 
+## Required "Plumbing"
+
+To keep things lightweight, this plug-in uses Javascript and CSS stored on two respective CDNs.  If things aren't displaying correctly in the browser, then your location may be having issues accessing those CDNs.
+
 ## Configuring Authorization
 The dashboard exposes sensitive information about your web server, so it is really important to restrict access to it.  By default, only local requests are allowed.  You can change this by passing your own implementations of the `Snork.AspNet.DashboardBuilder.IDashboardAuthorizationFilter` interface, whose `Authorize` method is used to allow or prohibit a request. The first step is to provide your own implementation.
 
