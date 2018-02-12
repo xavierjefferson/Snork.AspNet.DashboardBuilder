@@ -127,9 +127,9 @@
       <Project>{c5765171-8cc8-4699-94c9-d878851e71d7}</Project>
       <Name>Snork.AspNet.DashboardBuilder</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Snork.AspNetSysInfo\Snork.AspNetSysInfo.csproj">
+    <ProjectReference Include="..\..\src\Snork.AspNetSysInfo\Snork.AspNet.Dashboard.SysInfo.csproj">
       <Project>{4a57c7d2-9e7e-440f-9e09-f7dd9df8d691}</Project>
-      <Name>Snork.AspNetSysInfo</Name>
+      <Name>Snork.AspNet.Dashboard.SysInfo</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

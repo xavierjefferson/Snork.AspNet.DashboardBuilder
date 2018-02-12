@@ -85,6 +85,7 @@
     <Compile Include="HtmlHelper.cs" />
     <Compile Include="IDashboardAuthorizationFilter.cs" />
     <Compile Include="IDashboardDispatcher.cs" />
+    <Compile Include="IDashboardOptions.cs" />
     <Compile Include="IRouteSource.cs" />
     <Compile Include="LocalRequestsOnlyAuthorizationFilter.cs" />
     <Compile Include="MiddlewareExtensions.cs" />

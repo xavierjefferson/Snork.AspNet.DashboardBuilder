@@ -1,7 +1,7 @@
 ﻿using Microsoft.Owin;
 using MvcSample;
 using Owin;
-using Snork.AspNetSysInfo;
+using Snork.AspNet.Dashboard.SysInfo;
 
 [assembly: OwinStartup(typeof(Startup))]
 

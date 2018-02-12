@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Snork.AspNetSysInfo
+namespace Snork.AspNet.Dashboard.SysInfo
 {
     internal class GridItemList : List<GridItem>
     {

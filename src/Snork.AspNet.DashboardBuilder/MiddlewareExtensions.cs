@@ -5,9 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Owin;
-using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Infrastructure;
-using Microsoft.Owin.StaticFiles;
 using Owin;
 
 namespace Snork.AspNet.DashboardBuilder
@@ -15,42 +13,33 @@ namespace Snork.AspNet.DashboardBuilder
     using MidFunc = Func<
         Func<IDictionary<string, object>, Task>,
         Func<IDictionary<string, object>, Task>>;
-    using BuildFunc = Action<
-        Func<
-            IDictionary<string, object>,
-            Func<
-                Func<IDictionary<string, object>, Task>,
-                Func<IDictionary<string, object>, Task>
-            >>>;
 
-  
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class MiddlewareExtensions
     {
-        public static IAppBuilder UseDashboard0(this IAppBuilder builder, string pathMatch, IDashboardOptions options,
+        public static IAppBuilder UseDashboard(this IAppBuilder app, string pathMatch, IDashboardOptions options,
             IRouteSource routeSource)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (app == null) throw new ArgumentNullException(nameof(app));
             if (pathMatch == null) throw new ArgumentNullException(nameof(pathMatch));
             if (options == null) throw new ArgumentNullException(nameof(options));
             if (routeSource == null) throw new ArgumentException(nameof(routeSource));
 
-            SignatureConversions.AddConversions(builder);
-          
-        
-            builder.Map(pathMatch, subApp =>
+            SignatureConversions.AddConversions(app);
+
+
+            app.Map(pathMatch, subApp =>
             {
-                RouteCollection routes = routeSource.GetRoutes();
-                BuildFunc tempQualifier = middleware => subApp.Use(middleware(subApp.Properties));
-                if (tempQualifier == null) throw new ArgumentNullException(nameof(tempQualifier));
-               
+                var routes = routeSource.GetRoutes();
+                void TempQualifier(Func<IDictionary<string, object>, MidFunc> middleware) => subApp.Use(middleware(subApp.Properties));
+
 
                 if (routes == null) throw new ArgumentNullException(nameof(routes));
 
-                tempQualifier(_ => UseDashboard(options, routes));
-                BuildFunc temp = tempQualifier;
+                TempQualifier(_ => UseDashboard(options, routes));
             });
-            return builder;
+            return app;
         }
 
         private static MidFunc UseDashboard([NotNull] IDashboardOptions options, [NotNull] RouteCollection routes)
@@ -92,7 +81,7 @@ namespace Snork.AspNet.DashboardBuilder
                 OuterFunc;
         }
 
- 
+
         private static Task Unauthorized(IOwinContext owinContext)
         {
             var isAuthenticated = owinContext.Authentication?.User?.Identity?.IsAuthenticated;

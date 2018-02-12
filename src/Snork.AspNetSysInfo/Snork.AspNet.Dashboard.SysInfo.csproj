@@ -7,8 +7,8 @@
     <ProjectGuid>{4A57C7D2-9E7E-440F-9E09-F7DD9DF8D691}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Snork.AspNetSysInfo</RootNamespace>
-    <AssemblyName>Snork.AspNetSysInfo</AssemblyName>
+    <RootNamespace>Snork.AspNet.Dashboard.SysInfo</RootNamespace>
+    <AssemblyName>Snork.AspNet.Dashboard.SysInfo</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -52,7 +52,10 @@
     <Compile Include="GridItem.cs" />
     <Compile Include="GridItemList.cs" />
     <Compile Include="HomePage.cs" />
-    <Compile Include="WebformsHomePage.cs" />
+    <Compile Include="WebFormsExtensions.cs" />
+    <Compile Include="WebformsHomePage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resource1.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -73,10 +76,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="default.css" />
-    <Content Include="jquery-2.2.4.min.js" />
-    <Content Include="kendo.all.min.js" />
-    <Content Include="kendo.blueopal.min.css" />
-    <Content Include="kendo.common.min.css" />
     <Content Include="sysinfo.js" />
   </ItemGroup>
   <ItemGroup>

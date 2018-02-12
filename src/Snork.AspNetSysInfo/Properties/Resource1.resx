@@ -121,18 +121,7 @@
   <data name="default_css" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\default.css;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="jquery_2_2_4_min" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\jquery-2.2.4.min.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="kendo_all_min" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\kendo.all.min.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="kendo_blueopal_min" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\kendo.blueopal.min.css;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="kendo_common_min" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\kendo.common.min.css;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
+  
   <data name="sysinfojs" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\sysinfo.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>

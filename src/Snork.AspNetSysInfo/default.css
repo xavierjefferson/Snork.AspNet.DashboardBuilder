@@ -1,16 +1,16 @@
-﻿a:link {
+﻿/*a:link {
     background-color: #ffffff;
     color: #000099;
     text-decoration: none;
 }
 
-a:hover { text-decoration: underline; }
+a:hover { text-decoration: underline; }*/
 
 body {
     font-family: Sans-Serif
 }
 
-table {
+/*table {
     border: 0;
     border-collapse: collapse;
     margin-left: auto;
@@ -54,4 +54,4 @@ td, th {
 .value_false {
     background-color: #cccccc;
     color: #ff0000;
-}
+}*/

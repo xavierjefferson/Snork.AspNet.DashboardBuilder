@@ -1,11 +1,8 @@
 using System.IO;
-using System.Runtime.Remoting.Contexts;
 using System.Web;
-using System.Web.Compilation;
-using System.Web.UI;
 using Snork.AspNet.DashboardBuilder;
 
-namespace Snork.AspNetSysInfo
+namespace Snork.AspNet.Dashboard.SysInfo
 {
     public class HomePage : HtmlPage
     {

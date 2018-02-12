@@ -3,7 +3,7 @@ using System.ComponentModel;
 using Owin;
 using Snork.AspNet.DashboardBuilder;
 
-namespace Snork.AspNetSysInfo
+namespace Snork.AspNet.Dashboard.SysInfo
 {
     /// <threadsafety static="true" instance="false" />
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -26,7 +26,7 @@ namespace Snork.AspNetSysInfo
            
             options = options ?? new DashboardOptions();
             var routeSource = new DashboardRoutes();
-            return builder.UseDashboard0("/sysinfo", options, routeSource);
+            return builder.UseDashboard("/sysinfo", options, routeSource);
 
         }
 

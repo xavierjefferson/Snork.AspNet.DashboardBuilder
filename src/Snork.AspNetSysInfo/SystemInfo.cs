@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Snork.AspNetSysInfo
+namespace Snork.AspNet.Dashboard.SysInfo
 {
     public class SystemInfo
     {

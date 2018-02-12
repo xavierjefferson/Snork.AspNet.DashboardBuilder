@@ -1,4 +1,4 @@
-namespace Snork.AspNetSysInfo
+namespace Snork.AspNet.Dashboard.SysInfo
 {
     internal class GridItem
     {
